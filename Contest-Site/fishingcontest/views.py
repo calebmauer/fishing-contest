@@ -8,9 +8,6 @@ from operator import *
 
 from fishingcontest.models import Contestant, Fish
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the fishing index.")
-
 # Age groups, inclusive. Specify min and max.
 age_groups = ((3, 6), (7, 10), (11, 16))
 

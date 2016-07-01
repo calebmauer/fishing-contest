@@ -7,7 +7,7 @@ from fishingcontest.models import Contestant, Fish
 def main(request):
 	""" A main page which contains a list of users. Can click on a contestant to view
 	and edit the list of fish they caught. """
-	template = loader.get_template('fishingcontest/mainmenu.html')
+	template = loader.get_template('fishingcontest/main.html')
 	context = RequestContext(request, {
 		'contestants': list(sorted(Contestant.objects.all(), key=lambda x: x.last_name+x.first_name))
     })
