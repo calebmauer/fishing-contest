@@ -21,9 +21,12 @@ def leaderboard_long(request):
     
     leader_lists = zip(leader_lists, list_labels)
     
-    template = loader.get_template('fishingcontest/leaderboard_long.html')
+    template = loader.get_template('fishingcontest/leaderboard.html')
     context = RequestContext(request, {
-        'leader_lists': leader_lists
+        'leader_lists': leader_lists,
+		'do_refresh': False,
+		'layout_class': 'col-md-12', # Each table on its own row
+		'title': 'Leaderboard (full)'
     })
     return HttpResponse(template.render(context))
 
@@ -54,7 +57,10 @@ def leaderboard(request):
     template = loader.get_template('fishingcontest/leaderboard.html')
     context = RequestContext(request, {
         'leader_lists': leader_lists,
-        'list_page' : list_page
+        'list_page' : list_page,
+		'do_refresh': True,
+		'layout_class': 'col-md-4', # Three columns per row
+		'title': 'Leaderboard (grid)'
     })
     return HttpResponse(template.render(context))
 

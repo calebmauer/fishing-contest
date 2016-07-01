@@ -5,27 +5,27 @@
 	<script src="{% static "lib/bootstrap/js/bootstrap.min.js" %}"></script>
 	<link rel="stylesheet" type="text/css" href="{% static "lib/bootstrap/css/bootstrap.min.css" %}" />
 
+	{% if do_refresh %} 
 	<script type="text/JavaScript">
-	<!--
 	redirectTime = "5000";
 	redirectURL = "/fishingcontest/leaderboard/?list_page={{list_page}}";
 	function timedRedirect() {
 		setTimeout("location.href = redirectURL;",redirectTime);
 	}
 	timedRedirect();
-	//   -->
 	</script>
+	{% endif %}
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Leaderboard</title>
+	<title>{{title}}</title>
 </head>
 
-<body onclick="javascript: location.href = redirectURL;">
+<body onclick="javascript: location.href = redirectURL;" >
 
 <div class="row">
 {% if leader_lists %}
     {% for leader_list, name, new_row in leader_lists %}
-		<div class="col-md-4">
+		<div class="{{layout_class}}" style="padding: 0.1em">
 		<table class="leadertable">
 		{% if name %}
 			<tr class="header"><td colspan=5>{{name}}</td></tr>
