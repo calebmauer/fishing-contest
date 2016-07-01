@@ -1,6 +1,9 @@
 <head>
 	{% load staticfiles %}
 	<link rel="stylesheet" type="text/css" href="{% static "leaderboard.css" %}" media="screen" />
+	
+	<script src="{% static "lib/bootstrap/js/bootstrap.min.js" %}"></script>
+	<link rel="stylesheet" type="text/css" href="{% static "lib/bootstrap/css/bootstrap.min.css" %}" />
 
 	<script type="text/JavaScript">
 	<!--
@@ -12,20 +15,17 @@
 	timedRedirect();
 	//   -->
 	</script>
-
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Leaderboard</title>
 </head>
 
-<body>
+<body onclick="javascript: location.href = redirectURL;">
 
-<div onclick="javascript: location.href = redirectURL;" class="leaderrow">
+<div class="row">
 {% if leader_lists %}
     {% for leader_list, name, new_row in leader_lists %}
-		{% if new_row %}
-</div>
-<div onclick="javascript: location.href = redirectURL;" class="leaderrow">
-		{% endif %}
-		<div class="leaderbox">
+		<div class="col-md-4">
 		<table class="leadertable">
 		{% if name %}
 			<tr class="header"><td colspan=5>{{name}}</td></tr>

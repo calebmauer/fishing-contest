@@ -1,17 +1,6 @@
-.leaderrow {
-	width: 100%;
-	float: left;
-}
 .leaderbox {
 	float: left;
-	width: 32%;
-	margin: 0;
 	border: 1px solid black;
-}
-.leadercolumn {
-	width: 40%;
-	border: 1px solid black;
-	margin: 0;
 }
 .leadertable {
 	width: 100%;
@@ -27,7 +16,7 @@
 	font-size: x-large;
 	font-weight: bold;
 	bottom-border: 1px double black;
-	background-color: Gainsboro;
+	background-color: #00e6b8;
 }
 .fisher-row {
 	white-space: nowrap; 
