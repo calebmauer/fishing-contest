@@ -1,0 +1,30 @@
+h1 {
+	color: #00e6b8;
+	text-decoration: none;
+}
+h2 {
+	color: #ff5050;
+}
+a {
+	text-decoration: none;
+}
+
+li span {
+	color: black;
+}
+
+.f {
+	color: hotpink;
+}
+.m {
+	color: blue;
+}
+.contestant span {
+	cursor: pointer; 
+}
+.contestant span:hover {
+	background-color: #00e6b8; 
+}
+.fish:hover {
+	background-color: #00e6b8; 
+}

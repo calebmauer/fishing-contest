@@ -1,0 +1,158 @@
+
+<script src="{{ STATIC_URL }}jquery-1.12.4.min.js"></script>
+<script src="{{ STATIC_URL }}jquery.contextMenu.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jqeury.contextMenu.css" media="screen" />
+
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}mainmenu.css" media="screen" />
+
+<script type="text/JavaScript">
+redirectURL = "/fishingcontest/main/fishlist/";
+function contestantClick(contestantid) {
+	// If fish already loaded, remove it. Toggle functionality.
+	divid = "#c_"+contestantid+"_fish";
+	if ($(divid).length) {
+		$(divid).remove();
+	} else {
+		requestHref = redirectURL+contestantid;
+		$.ajax(requestHref, {
+		  success: function(data) {
+			$('#c_'+contestantid).append(data);
+			$(divid).find(".new-weight").focus();
+		  },
+		  error: function() {
+			 alert('An error occurred trying to load'+requestHref);
+		  }
+	    });
+    }
+}
+
+function addContestant() {
+	divid = $("#new-contestant");
+	
+	firstBox = $("#new-first-name");
+	lastBox = $("#new-last-name");
+	ageBox = $("#new-age");
+	genderBox = $("#new-gender");
+	
+	firstName = firstBox.val();
+	lastName = lastBox.val();
+	age = ageBox.val();
+	gender = genderBox.val();
+	
+	$.get("addcontestant/",
+		{firstName: firstBox.val(), lastName: lastBox.val(), age: ageBox.val(), gender: genderBox.val()},
+		function(data) {
+			$(divid).before(data);
+			firstBox.val('');
+			lastBox.val('');
+			ageBox.val('');
+			genderBox.val('M');
+			firstBox.focus();
+			$("#c-count").html(parseInt($("#c-count").html())+1);
+		}
+	);
+}
+
+function addFish(contestantid) {
+	divid = "#c_"+contestantid+"_fish";
+	weightBox = $(divid).find(".new-weight");
+	weight = weightBox.val();
+	
+	// Add a new fish to this contestant and insert the new fish into contestant's list
+	$.get("addfish/",
+		{weight: weightBox.val(), contestantid: contestantid},
+		function(data) {
+			newListItem = $(divid).find(".new-fish-li");
+			newListItem.before(data);
+			weightBox.val('');
+			weightBox.focus();
+		}
+	);
+}
+
+function addContestantContextmenu(contestantid,name) {
+	contestantspan = $("#c_"+contestantid+"_span");
+
+	// Show menu when clicked
+	contestantspan.contextMenu({
+		menu: 'deleteMenu'
+	},
+		function(action, el, pos) {
+			if (action == "refresh") {
+				location.reload();
+			} else if (action == "delete") {
+				$.get("deletecontestant/", {contestantid: contestantid},
+				  function(data) {
+					$("#c_"+contestantid).remove();
+					$("#c-count").html(parseInt($("#c-count").html())-1);
+				  }
+				);
+			}
+		}
+	);
+}
+
+function addFishContextmenu(fishid) {
+
+	fishli = $("#f_"+fishid);
+
+	fishli.contextMenu({
+		menu: 'deleteFishMenu'
+	},
+		function(action, el, pos) {
+			if (action == "refreshfish") {
+				location.reload();
+			} else if (action == "deletefish") {
+				$.get("deletefish/", {fishid: fishid},
+					function(data) {
+						fishli.remove();
+					}
+				);
+			}
+	});
+}
+
+$( document ).ready(function() {
+    $("#new-first-name").focus();
+});
+
+</script>
+
+<head>
+<title>Fishing Contest</title>
+</head>
+<body oncontextmenu="return false;">
+	<a href="{% url 'leaderboard' %}">Leaderboard</a><br/>
+	<a href="{% url 'leaderboard_long' %}">Long Leaderboard</a>
+	<a href="{% url 'main' %}"><h1>Kid's Fishing Contest 2016</h1></a>
+	<div width="50%">
+		<h2>Contestants (<span id="c-count">{{contestants|length}}</span>)</h2>
+		<ul>
+		{% if contestants %}
+			{% for contestant in contestants %}
+				{% include "fishingcontest/contestantentry.html" with contestant=contestant only %}
+			{% endfor %}
+		{% endif %}
+			<li id="new-contestant">
+				<input id="new-first-name" placeholder="First name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
+				<input id="new-last-name" placeholder="Last name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
+				<input id="new-age" placeholder="Age" type="number" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
+				<select id="new-gender" onkeypress="Javascript: if (event.keyCode==13)  addContestant();">
+					<option value="M">Boy</option>
+					<option value="F">Girl</option>
+				</select>
+				<button onClick="addContestant()">Add new</button>
+			</li>
+		</ul>
+	</div>
+	
+	<!-- Taken from view-source:http://labs.abeautifulsite.net/archived/jquery-contextMenu/demo/ -->
+	<ul id="deleteMenu" class="contextMenu">
+		<li class="delete"><a href="#delete">Delete Contestant</a></li>
+		<li class="quit separator"><a href="#refresh">Refresh</a></li>
+	</ul>
+	<ul id="deleteFishMenu" class="contextMenu">
+		<li class="delete"><a href="#deletefish">Delete Fish</a></li>
+		<li class="quit separator"><a href="#refreshfish">Refresh</a></li>
+	</ul>
+</body>

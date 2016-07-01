@@ -1,0 +1,13 @@
+<div id="c_{{contestantid}}_fish">
+	<ul>
+	{% if fishes %}
+		{% for fish in fishes %}
+			{% include "fishingcontest/fishentry.html" with fish=fish only %}
+		{% endfor %}
+	{% endif %}
+		<li class="new-fish-li">
+			<input class="new-weight" placeholder="Type weight" type="number" onkeypress="Javascript: if (event.keyCode==13) addFish({{contestantid}});"></input>
+			<button onClick="addFish({{contestantid}})">Add fish</button>
+		</li>
+	</ul>
+</div>

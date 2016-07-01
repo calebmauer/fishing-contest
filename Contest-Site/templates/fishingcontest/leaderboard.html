@@ -1,0 +1,50 @@
+<script type="text/JavaScript">
+<!--
+redirectTime = "5000";
+redirectURL = "/fishingcontest/leaderboard/?list_page={{list_page}}";
+function timedRedirect() {
+	setTimeout("location.href = redirectURL;",redirectTime);
+}
+timedRedirect();
+//   -->
+</script>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}leaderboard.css" media="screen" />
+
+<head>
+	<title>Leaderboard</title>
+</head>
+
+<body>
+
+<div onclick="javascript: location.href = redirectURL;" class="leaderrow">
+{% if leader_lists %}
+    {% for leader_list, name, new_row in leader_lists %}
+		{% if new_row %}
+</div>
+<div onclick="javascript: location.href = redirectURL;" class="leaderrow">
+		{% endif %}
+		<div class="leaderbox">
+		<table class="leadertable">
+		{% if name %}
+			<tr class="header"><td colspan=5>{{name}}</td></tr>
+		{% endif %}
+
+		{% if leader_list %}
+			{% for leader in leader_list %}
+			<tr class="fisher-row">
+				<td class="fisher-cell">{{leader.rank}}</td>
+				<td class="fisher-cell">{{leader.name}}</td>
+				<td{% if leader.biggest_fish.color %} style="color: {{leader.biggest_fish.color}};font-weight:bold;"{% endif %}>
+					{{leader.biggest_fish.weight}}&nbsp;
+				</td>
+			</tr>
+			{% endfor %}
+		{% else %}
+			<tr class="fisher-row"><td colspan=5>No contestants in this group.</td></tr>
+		{% endif %}
+		</table>
+	</div>
+	{% endfor %}
+{% endif %}
+
+</body>
