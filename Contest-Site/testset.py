@@ -4,9 +4,9 @@ import random
 random.seed()
 
 def createTestFisher(attribs):
-	""" Add a contestant to the database. Adds a random number
-	of fish with random weights. """
-    rand_age = random.randrange(3, 16)
+    """ Add a contestant to the database. Adds a random number
+    of fish with random weights. """
+    rand_age = random.randrange(3,16)
     c = Contestant.objects.create(first_name=attribs[0],
                                   middle_name=attribs[1],
                                   last_name=attribs[2],
