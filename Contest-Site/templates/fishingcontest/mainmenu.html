@@ -1,9 +1,9 @@
+{% load staticfiles %}
+<script src="{% static "jquery-1.12.4.min.js" %}"></script>
+<script src="{% static "jquery.contextMenu.js" %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static "jqeury.contextMenu.css" %}" media="screen" />
 
-<script src="{{ STATIC_URL }}jquery-1.12.4.min.js"></script>
-<script src="{{ STATIC_URL }}jquery.contextMenu.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jqeury.contextMenu.css" media="screen" />
-
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}mainmenu.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="{% static "mainmenu.css" %}" media="screen" />
 
 <script type="text/JavaScript">
 redirectURL = "/fishingcontest/main/fishlist/";
@@ -125,6 +125,7 @@ $( document ).ready(function() {
 	<a href="{% url 'leaderboard' %}">Leaderboard</a><br/>
 	<a href="{% url 'leaderboard_long' %}">Long Leaderboard</a>
 	<a href="{% url 'main' %}"><h1>Kid's Fishing Contest 2016</h1></a>
+
 	<div width="50%">
 		<h2>Contestants (<span id="c-count">{{contestants|length}}</span>)</h2>
 		<ul>

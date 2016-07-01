@@ -1,16 +1,18 @@
-<script type="text/JavaScript">
-<!--
-redirectTime = "5000";
-redirectURL = "/fishingcontest/leaderboard/?list_page={{list_page}}";
-function timedRedirect() {
-	setTimeout("location.href = redirectURL;",redirectTime);
-}
-timedRedirect();
-//   -->
-</script>
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}leaderboard.css" media="screen" />
-
 <head>
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static "leaderboard.css" %}" media="screen" />
+
+	<script type="text/JavaScript">
+	<!--
+	redirectTime = "5000";
+	redirectURL = "/fishingcontest/leaderboard/?list_page={{list_page}}";
+	function timedRedirect() {
+		setTimeout("location.href = redirectURL;",redirectTime);
+	}
+	timedRedirect();
+	//   -->
+	</script>
+
 	<title>Leaderboard</title>
 </head>
 

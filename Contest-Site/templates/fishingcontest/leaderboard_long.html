@@ -1,14 +1,15 @@
-<script type="text/JavaScript">
-redirectTime = "60000";
-redirectURL = "/fishingcontest/leaderboard_long/";
-function timedRedirect() {
-	setTimeout("location.href = redirectURL;",redirectTime);
-}
-</script>
-
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}leaderboard.css" media="screen" />
-
 <head>
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static "leaderboard.css" %}" media="screen" />
+
+	<script type="text/JavaScript">
+	redirectTime = "60000";
+	redirectURL = "/fishingcontest/leaderboard_long/";
+	function timedRedirect() {
+		setTimeout("location.href = redirectURL;",redirectTime);
+	}
+	</script>
+
 	<title>Long Leaderboard</title>
 </head>
 
