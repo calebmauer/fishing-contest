@@ -5,4 +5,4 @@ Kids are divided by gender and age group. The app allows for fast entry of kids 
 
 The database is sqlite. The code is mixed between Django/python and HTML/Javascript/css.
 
-![Screenshot](https://github.com/calebmauer/fishing-contest/raw/master/LeaderboardScreenshot.png)
+![Screenshot](https://github.com/calebmauer/fishing-contest/blob/master/img/LeaderboardScreenshot.png)
