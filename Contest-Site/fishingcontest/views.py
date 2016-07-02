@@ -97,10 +97,10 @@ def getLeaderList(objects):
 
     addFishRanks(leader_list)
 
-	# un-comment these lines to remove ranks from contestants who haven't caught fish
-    #for c in leader_list:
-    #    if c.biggest_fish is None:
-    #        c.rank = ''
+	# remove ranks from contestants who haven't caught fish
+    for c in leader_list:
+        if c.biggest_fish is None:
+            c.rank = ''
 
     return leader_list
 
