@@ -14,7 +14,7 @@ def main(request):
 	return HttpResponse(template.render(context))
 	
 def contestantlist(request):
-	contestantList = {'contestants': [{'first_name':c.first_name,'last_name':c.last_name,'age':c.age,'id':c.id}
+	contestantList = {'contestants': [{'first_name':c.first_name,'last_name':c.last_name,'age':c.age,'gender':c.gender,'id':c.id}
 						for c in sorted(Contestant.objects.all(), key=lambda x: x.last_name+x.first_name)]}
 	
 	return JsonResponse(contestantList)

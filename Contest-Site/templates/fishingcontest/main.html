@@ -1,4 +1,4 @@
-<html>
+<html ng-app="app">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -80,26 +80,8 @@ function addFish(contestantid) {
 	);
 }
 
-function addContestantContextmenu(contestantid,name) {
-	contestantspan = $("#c_"+contestantid+"_span");
+function addContestantContextmenu(contestantid,element) {
 
-	// Show menu when clicked
-	contestantspan.contextMenu({
-		menu: 'deleteMenu'
-	},
-		function(action, el, pos) {
-			if (action == "refresh") {
-				location.reload();
-			} else if (action == "delete") {
-				$.get("deletecontestant/", {contestantid: contestantid},
-				  function(data) {
-					$("#c_"+contestantid).remove();
-					$("#c-count").html(parseInt($("#c-count").html())-1);
-				  }
-				);
-			}
-		}
-	);
 }
 
 function addFishContextmenu(fishid) {
@@ -145,7 +127,7 @@ $( document ).ready(function() {
 
 	function contestantRow () {
 	  return {
-		restrict: 'EA',
+		restrict: 'E',
 		replace: true,
 		scope: true,
 		controllerAs: 'contestant',
@@ -165,6 +147,7 @@ $( document ).ready(function() {
 		].join('')
 	  };
 	}
+
 	
 	angular
 	  .module('app',[])
@@ -173,7 +156,29 @@ $( document ).ready(function() {
 	  .module('app')
 	  .controller('Contestants', Contestants);
 	angular
-	  .module('app').controller('contestantRow', contestantRow);
+	  .module('app')
+	  .directive('contestantRow', contestantRow)
+	  .directive('contestantContext', function () {
+		return function(scope, element, attrs) {
+			// Show context menu when right-clicked
+			element.contextMenu({
+				menu: 'deleteMenu'
+			},
+				function(action, el, pos) {
+					if (action == "refresh") {
+						location.reload();
+					} else if (action == "delete") {
+						$.get("deletecontestant/", {contestantid: scope.contestant.contestantid},
+						  function(data) {
+							$("#c_"+contestantid).remove();
+							$("#c-count").html(parseInt($("#c-count").html())-1);
+						  }
+						);
+					}
+				}
+			);
+		}
+	  });
 
 	//-->
 </script>
@@ -181,7 +186,7 @@ $( document ).ready(function() {
 <title>Fishing Contest</title>
 </head>
 {% verbatim %} <!-- Django ignores curly braces after verbatim -->
-<body oncontextmenu="return false;" ng-app="app">
+<body oncontextmenu="return false;">
 	<a href="{% url 'leaderboard' %}">Leaderboard</a><br/>
 	<a href="{% url 'leaderboard_long' %}">Long Leaderboard</a>
 	<a href="{% url 'main' %}"><h1>Kid's Fishing Contest 2016</h1></a>
@@ -189,8 +194,8 @@ $( document ).ready(function() {
 	<div width="50%" ng-controller="Contestants as contestants">
 		<h2>Contestants (<span id="c-count">{{contestants.items.length}}</span>)</h2>
 		<ul>
-			<li ng-repeat="item in contestants.items">
-				{{item.last_name}}
+			<li ng-repeat="contestant in contestants.items" id="c_{{contestant.id}}" class="contestant {{contestant.gender}}" >
+				<span id="c_{{contestant.id}}_span" contestant-context>{{contestant.last_name}}, {{contestant.first_name}} ({{contestant.age}})</span>
 			</li>
 			<li id="new-contestant">
 				<input id="new-first-name" placeholder="First name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
