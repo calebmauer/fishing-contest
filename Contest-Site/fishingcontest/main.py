@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import RequestContext, loader
 
@@ -13,6 +13,12 @@ def main(request):
     })
 	return HttpResponse(template.render(context))
 	
+def contestantlist(request):
+	contestantList = {'contestants': [{'first_name':c.first_name,'last_name':c.last_name,'age':c.age,'id':c.id}
+						for c in sorted(Contestant.objects.all(), key=lambda x: x.last_name+x.first_name)]}
+	
+	return JsonResponse(contestantList)
+
 def addcontestant(request):
 
 	firstname = request.GET.get('firstName')

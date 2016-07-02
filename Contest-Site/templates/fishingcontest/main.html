@@ -1,13 +1,22 @@
+<html>
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 {% load staticfiles %}
 <script src="{% static "jquery-3.0.0.min.js" %}"></script>
 <script src="{% static "jquery.contextMenu.js" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static "jqeury.contextMenu.css" %}" media="screen" />
-
+<script src="{% static "angular.min.js" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static "main.css" %}" media="screen" />
+<!--
+<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+-->
+
 
 <script type="text/JavaScript">
-
+<!--
 function contestantClick(contestantid) {
 	// If fish already loaded, remove it. Toggle functionality.
 	divid = "#c_"+contestantid+"_fish";
@@ -117,26 +126,72 @@ $( document ).ready(function() {
     $("#new-first-name").focus();
 });
 
+	function ContestantService($http) {
+		this.getContestants = function(callback) {
+			$http.get("contestantlist/").success(function(data){
+				callback(data.contestants);
+			});
+		}
+	}
+
+	function Contestants($scope,ContestantService) {
+		this.loadContestants = function() {
+			ContestantService.getContestants(function (contestants) {
+				this.items = contestants;
+			}.bind(this));
+		}.bind(this);
+		this.loadContestants();
+	}
+
+	function contestantRow () {
+	  return {
+		restrict: 'EA',
+		replace: true,
+		scope: true,
+		controllerAs: 'contestant',
+		controller: function () {
+
+		},
+		link: function ($scope, $element, $attrs) {
+
+		},
+		template: [
+			'<li id="c_{{contestant.id}}" class="contestant">',
+				'<span ng-model="contestant.last_name"></span>,<span ng-model="contestant.first_name"></span> (<span ng-model="contestant.ag"></span>)',
+				'<script>',
+					'addContestantContextmenu({{contestant.id}});',
+				'</script>',
+			'</li>'
+		].join('')
+	  };
+	}
+	
+	angular
+	  .module('app',[])
+	  .service('ContestantService', ContestantService);
+	angular
+	  .module('app')
+	  .controller('Contestants', Contestants);
+	angular
+	  .module('app').controller('contestantRow', contestantRow);
+
+	//-->
 </script>
 
-
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fishing Contest</title>
 </head>
-<body oncontextmenu="return false;">
+{% verbatim %} <!-- Django ignores curly braces after verbatim -->
+<body oncontextmenu="return false;" ng-app="app">
 	<a href="{% url 'leaderboard' %}">Leaderboard</a><br/>
 	<a href="{% url 'leaderboard_long' %}">Long Leaderboard</a>
 	<a href="{% url 'main' %}"><h1>Kid's Fishing Contest 2016</h1></a>
 
-	<div width="50%">
-		<h2>Contestants (<span id="c-count">{{contestants|length}}</span>)</h2>
+	<div width="50%" ng-controller="Contestants as contestants">
+		<h2>Contestants (<span id="c-count">{{contestants.items.length}}</span>)</h2>
 		<ul>
-		{% if contestants %}
-			{% for contestant in contestants %}
-				{% include "fishingcontest/contestantentry.html" with contestant=contestant only %}
-			{% endfor %}
-		{% endif %}
+			<li ng-repeat="item in contestants.items">
+				{{item.last_name}}
+			</li>
 			<li id="new-contestant">
 				<input id="new-first-name" placeholder="First name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
 				<input id="new-last-name" placeholder="Last name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
@@ -160,3 +215,5 @@ $( document ).ready(function() {
 		<li class="quit separator"><a href="#refreshfish">Refresh</a></li>
 	</ul>
 </body>
+{% endverbatim %}
+</html>
