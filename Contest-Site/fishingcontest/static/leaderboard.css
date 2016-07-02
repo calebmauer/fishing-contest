@@ -1,27 +1,20 @@
-.leaderbox {
-	float: left;
-	border: 1px solid black;
-}
 .leadertable {
 	width: 100%;
-	border: 1px solid black;
-	border-color: black;
+	border: 1px solid #00e6b8;
+	border-color: #00e6b8;
 	text-align: center;
 	border-collapse: collapse;
-	margin: 0;
-	border-radius: 5px;
 }
 .header {
-	text-align: center;
 	font-size: x-large;
 	font-weight: bold;
-	bottom-border: 1px double black;
+	border: none;
+	bottom-border: 1px double #00e6b8;
 	background-color: #00e6b8;
 }
 .fisher-row {
 	white-space: nowrap; 
-	border: 1px solid black;
-	margin: 0;
+	border: 1px solid #00e6b8;
 }
 .fisher-cell {
 	width: 33%;
