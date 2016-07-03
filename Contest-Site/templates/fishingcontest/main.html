@@ -221,20 +221,23 @@ angular
 						<span class="fish">{{fish.weight}}&nbsp;<span style="font-size:x-small">at {{fish.weigh_time}}</span></span>
 					</li>
 					<li>
-						<input type="number" placeholder="Fish weight" ng-model="contestant.new_fish.weight" focus-weight-box></input>
-						<button ng-click="contestants.addFish(contestant.id)">Add fish</button>
+						<form>
+							<input type="number" placeholder="Fish weight" ng-model="contestant.new_fish.weight" focus-weight-box></input>
+							<button type="submit" ng-click="contestants.addFish(contestant.id)">Add fish</button>
+						</form>
 					</li>
 				</ul>
 			</li>
 			<li>
-				<input id="first-name" ng-model="contestants.new_contestant.firstName" placeholder="First name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<input ng-model="contestants.new_contestant.lastName" placeholder="Last name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<input ng-model="contestants.new_contestant.age" placeholder="Age" type="number" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<select ng-model="contestants.new_contestant.gender" onkeypress="Javascript: if (event.keyCode==13)  addContestant();">
-					<option value="M">Boy</option>
-					<option value="F">Girl</option>
-				</select>
-				<button ng-click="contestants.addContestant()">Add new</button>
+				<form>
+					<input id="first-name" ng-model="contestants.new_contestant.firstName" placeholder="First name"></input>
+					<input ng-model="contestants.new_contestant.lastName" placeholder="Last name"></input>
+					<input ng-model="contestants.new_contestant.age" placeholder="Age" type="number"></input>
+					<select ng-model="contestants.new_contestant.gender">
+						<option value="M">Boy</option>
+						<option value="F">Girl</option>
+					</select>
+					<button type="submit" ng-click="contestants.addContestant()">Add new</button><form>
 			</li>
 		</ul>
 	</div>
