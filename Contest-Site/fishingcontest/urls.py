@@ -16,7 +16,7 @@ urlpatterns = [
    url(r'^contestantlist/$', main.contestantlist, name='contestantlist'),
    
     # Takes a contestant and renders list of all caught fish
-   url(r'^fishlist/(\d+)/$', main.fishlist, name='fishlist'),
+   url(r'^fishlist/$', main.fishlist, name='fishlist'),
    
    # addcontestant (first,last,age,gender)
    url(r'^addcontestant/$', main.addcontestant, name='addcontestant'), 

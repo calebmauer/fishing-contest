@@ -4,9 +4,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 {% load staticfiles %}
+
 <script src="{% static "jquery-3.0.0.min.js" %}"></script>
 <script src="{% static "jquery.contextMenu.js" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static "jqeury.contextMenu.css" %}" media="screen" />
+
 <script src="{% static "angular.min.js" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static "main.css" %}" media="screen" />
 <!--
@@ -17,197 +19,225 @@
 
 <script type="text/JavaScript">
 <!--
-function contestantClick(contestantid) {
-	// If fish already loaded, remove it. Toggle functionality.
-	divid = "#c_"+contestantid+"_fish";
-	if ($(divid).length) {
-		$(divid).remove();
-	} else {
-		requestHref = "fishlist/"+contestantid;
-		$.ajax(requestHref, {
-		  success: function(data) {
-			$('#c_'+contestantid).append(data);
-			$(divid).find(".new-weight").focus();
-		  },
-		  error: function() {
-			 alert('An error occurred trying to load'+requestHref);
-		  }
-	    });
-    }
-}
 
-function addContestant() {
-	divid = $("#new-contestant");
-	
-	firstBox = $("#new-first-name");
-	lastBox = $("#new-last-name");
-	ageBox = $("#new-age");
-	genderBox = $("#new-gender");
-	
-	firstName = firstBox.val();
-	lastName = lastBox.val();
-	age = ageBox.val();
-	gender = genderBox.val();
-	
-	$.get("addcontestant/",
-		{firstName: firstBox.val(), lastName: lastBox.val(), age: ageBox.val(), gender: genderBox.val()},
-		function(data) {
-			$(divid).before(data);
-			firstBox.val('');
-			lastBox.val('');
-			ageBox.val('');
-			genderBox.val('M');
-			firstBox.focus();
-			$("#c-count").html(parseInt($("#c-count").html())+1);
-		}
-	);
-}
-
-function addFish(contestantid) {
-	divid = "#c_"+contestantid+"_fish";
-	weightBox = $(divid).find(".new-weight");
-	weight = weightBox.val();
-	
-	// Add a new fish to this contestant and insert the new fish into contestant's list
-	$.get("addfish/",
-		{weight: weightBox.val(), contestantid: contestantid},
-		function(data) {
-			newListItem = $(divid).find(".new-fish-li");
-			newListItem.before(data);
-			weightBox.val('');
-			weightBox.focus();
-		}
-	);
-}
-
-function addContestantContextmenu(contestantid,element) {
-
-}
-
-function addFishContextmenu(fishid) {
-
-	fishli = $("#f_"+fishid);
-
-	fishli.contextMenu({
-		menu: 'deleteFishMenu'
-	},
-		function(action, el, pos) {
-			if (action == "refreshfish") {
-				location.reload();
-			} else if (action == "deletefish") {
-				$.get("deletefish/", {fishid: fishid},
-					function(data) {
-						fishli.remove();
-					}
-				);
-			}
-	});
-}
-
-$( document ).ready(function() {
+$(document).ready(function() {
     $("#new-first-name").focus();
 });
 
-	function ContestantService($http) {
-		this.getContestants = function(callback) {
-			$http.get("contestantlist/").success(function(data){
-				callback(data.contestants);
-			});
-		}
-	}
-
-	function Contestants($scope,ContestantService) {
-		this.loadContestants = function() {
-			ContestantService.getContestants(function (contestants) {
-				this.items = contestants;
-			}.bind(this));
-		}.bind(this);
-		this.loadContestants();
-	}
-
-	function contestantRow () {
-	  return {
-		restrict: 'E',
-		replace: true,
-		scope: true,
-		controllerAs: 'contestant',
-		controller: function () {
-
-		},
-		link: function ($scope, $element, $attrs) {
-
-		},
-		template: [
-			'<li id="c_{{contestant.id}}" class="contestant">',
-				'<span ng-model="contestant.last_name"></span>,<span ng-model="contestant.first_name"></span> (<span ng-model="contestant.ag"></span>)',
-				'<script>',
-					'addContestantContextmenu({{contestant.id}});',
-				'</script>',
-			'</li>'
-		].join('')
-	  };
-	}
-
+function ContestantService($http) {
+	this.getContestants = function(callback) {
+		$http.get("contestantlist/").success(function(data){
+			callback(data.contestants);
+		});
+	};
 	
-	angular
-	  .module('app',[])
-	  .service('ContestantService', ContestantService);
-	angular
-	  .module('app')
-	  .controller('Contestants', Contestants);
-	angular
-	  .module('app')
-	  .directive('contestantRow', contestantRow)
-	  .directive('contestantContext', function () {
-		return function(scope, element, attrs) {
-			// Show context menu when right-clicked
-			element.contextMenu({
-				menu: 'deleteMenu'
-			},
-				function(action, el, pos) {
-					if (action == "refresh") {
-						location.reload();
-					} else if (action == "delete") {
-						$.get("deletecontestant/", {contestantid: scope.contestant.contestantid},
-						  function(data) {
-							$("#c_"+contestantid).remove();
-							$("#c-count").html(parseInt($("#c-count").html())-1);
-						  }
-						);
-					}
-				}
-			);
-		}
-	  });
+	this.addContestant = function(first,last,age,gender,callback) {
+		$http.get("addcontestant/",
+		{params: {firstName: first, lastName: last, age: age, gender: gender}})
+		.success(function(data){
+			callback(data);
+		});
+	};
+	
+	this.deleteContestant = function(contestantid,callback) {
+		$http.get("deletecontestant/", {params: {contestantid: contestantid}}).success(function(data){
+			callback(data);
+		});
+	};
+	
+	this.getFish = function(contestantid,callback) {
+		$http.get("fishlist/",{params:{contestantid:contestantid}}).success(function(data){
+			callback(data);
+		});
+	};
+	
+	this.addFish = function(contestantid,weight,callback) {
+		$http.get("addfish/",{params:{contestantid:contestantid,weight:weight}}).success(function(data){
+			callback(data);
+		});
+	};
+	
+	this.deleteFish = function(fishid,callback) {
+		$http.get("deletefish/",{params:{fishid:fishid}}).then(function(data){
+			callback(data);
+		});
+	};
+}
 
-	//-->
+function Contestants($scope,ContestantService) {
+	
+	// True when the lists of contestants has loaded from get request
+	this.loaded = false;
+	
+	// Setup new contestant fields
+	this.new_contestant = {firstName:"",lastName:"",age:"",gender:"M",}
+
+	this.loadContestants = function() {
+		ContestantService.getContestants(function (contestants) {
+			$.each(contestants, function(id,contestant) {
+				contestant.show_fish=false;
+				contestant.fish = {};
+				contestant.fishCount = 0;
+				contestant.new_fish = {weight:""};
+			}.bind(this));
+			this.items = contestants;
+			this.loaded = true;
+		}.bind(this));
+	}.bind(this);
+	
+	this.loadContestants();
+	
+	this.contestantClick = function(contestantid) {
+		contestant = this.items[contestantid];
+		contestant.show_fish = !contestant.show_fish;
+
+		// If fish already loaded, remove it. Toggle functionality.
+		if (contestant.show_fish) {
+			ContestantService.getFish(contestantid,function(fish) {
+				contestant.fish = fish;
+				contestant.fishCount = Object.keys(contestant.fish).length;
+				$('#c_'+contestantid).find(".new-weight").focus();
+			}.bind(this));
+		} else {
+			contestant.fish = {};
+			contestant.fishCount = 0;
+		}
+	}.bind(this);
+	
+	this.addContestant = function() {
+		
+		newContestant = this.new_contestant;
+		
+		ContestantService.addContestant(newContestant.firstName, newContestant.lastName, newContestant.age, newContestant.gender,
+		function(contestant) {
+			this.items[contestant.id] = contestant;
+			newContestant.firstName = '';
+			newContestant.lastName = '';
+			newContestant.gender = 'M';
+			newContestant.age = '';
+			$('#first-name').focus();
+		}.bind(this));
+	}.bind(this);
+	
+	this.count = function() {
+		return (this.items) ? Object.keys(this.items).length : 0;
+	}
+	
+	this.addFish = function(contestantid) {
+		contestant = this.items[contestantid]
+		new_weight = this.items[contestantid].new_fish.weight;
+		
+		// Add a new fish to this contestant and insert the new fish into contestant's list
+		ContestantService.addFish(contestantid,new_weight,function(newFish){
+			contestant.fish[newFish.id] = newFish;
+			contestant.new_fish.weight = "";
+			contestant.fishCount += 1;
+		}.bind(this));
+	}
+}
+
+function contestantContext(ContestantService) {
+    // Adds a context menu to contestant list items
+	return function(scope,element,attrs) {
+		element.contextMenu({
+			menu: 'deleteMenu'
+		},
+			function(action, el, pos) {
+				if (action == "refresh") {
+					location.reload();
+				} else if (action == "delete") {
+					ContestantService.deleteContestant(scope.contestant.id, function(data) {
+						delete scope.contestants.items[scope.contestant.id];
+					});
+				}
+			}
+		);
+	}
+}
+
+function fishContext(ContestantService) {
+    // Adds a context menu to fish list items
+	return function(scope,element,attrs){
+
+		element.contextMenu({
+			menu: 'deleteFishMenu'
+		},
+			function(action, el, pos) {
+				if (action == "refreshfish") {
+					location.reload();
+				} else if (action == "deletefish") {
+					ContestantService.deleteFish(scope.fish.id, function() {
+						delete scope.contestant.fish[scope.fish.id];
+						scope.contestant.fishCount += 1;
+					});
+				}
+		});
+	}
+}
+
+function focusWeightBox() {
+    // Focus the weight entry box after the contestant's
+	// fish collection changes
+	return function(scope,element,attrs){
+		scope.$watch('contestant.fishCount', function() {
+			element.focus();
+		});	
+	};
+}
+
+angular
+  .module('app',[])
+  .service('ContestantService', ContestantService);
+angular
+  .module('app')
+  .controller('Contestants', Contestants);
+angular
+  .module('app')
+  .directive('contestantContext', contestantContext)
+  .directive('fishContext', fishContext)
+  .directive('focusWeightBox',focusWeightBox);
+
+//-->
 </script>
 
 <title>Fishing Contest</title>
 </head>
-{% verbatim %} <!-- Django ignores curly braces after verbatim -->
+
 <body oncontextmenu="return false;">
 	<a href="{% url 'leaderboard' %}">Leaderboard</a><br/>
 	<a href="{% url 'leaderboard_long' %}">Long Leaderboard</a>
 	<a href="{% url 'main' %}"><h1>Kid's Fishing Contest 2016</h1></a>
-
+{% verbatim %} <!-- Django ignores curly braces after verbatim -->
 	<div width="50%" ng-controller="Contestants as contestants">
-		<h2>Contestants (<span id="c-count">{{contestants.items.length}}</span>)</h2>
+		<div ng-if="contestants.loaded">
+		<h2>Contestants (<span id="c-count">{{contestants.count()}}</span>)</h2>
 		<ul>
-			<li ng-repeat="contestant in contestants.items" id="c_{{contestant.id}}" class="contestant {{contestant.gender}}" >
-				<span id="c_{{contestant.id}}_span" contestant-context>{{contestant.last_name}}, {{contestant.first_name}} ({{contestant.age}})</span>
+			<li ng-repeat="(id, contestant) in contestants.items" class="contestant {{contestant.gender}}" >
+				<span contestant-context ng-click="contestants.contestantClick(contestant.id)">
+					{{contestant.last_name}}, {{contestant.first_name}} ({{contestant.age}})
+				</span>
+				<ul ng-if="contestant.show_fish">
+					<li ng-repeat="(id, fish) in contestant.fish" fish-context>
+						<span class="fish">{{fish.weight}}&nbsp;<span style="font-size:x-small">at {{fish.weigh_time}}</span></span>
+					</li>
+					<li>
+						<input type="number" placeholder="Fish weight" ng-model="contestant.new_fish.weight" focus-weight-box></input>
+						<button ng-click="contestants.addFish(contestant.id)">Add fish</button>
+					</li>
+				</ul>
 			</li>
-			<li id="new-contestant">
-				<input id="new-first-name" placeholder="First name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<input id="new-last-name" placeholder="Last name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<input id="new-age" placeholder="Age" type="number" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<select id="new-gender" onkeypress="Javascript: if (event.keyCode==13)  addContestant();">
+			<li>
+				<input id="first-name" ng-model="contestants.new_contestant.firstName" placeholder="First name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
+				<input ng-model="contestants.new_contestant.lastName" placeholder="Last name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
+				<input ng-model="contestants.new_contestant.age" placeholder="Age" type="number" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
+				<select ng-model="contestants.new_contestant.gender" onkeypress="Javascript: if (event.keyCode==13)  addContestant();">
 					<option value="M">Boy</option>
 					<option value="F">Girl</option>
 				</select>
-				<button onClick="addContestant()">Add new</button>
+				<button ng-click="contestants.addContestant()">Add new</button>
 			</li>
 		</ul>
+	</div>
 	</div>
 	
 	<!-- Taken from view-source:http://labs.abeautifulsite.net/archived/jquery-contextMenu/demo/ -->
