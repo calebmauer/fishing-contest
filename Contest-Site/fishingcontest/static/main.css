@@ -12,11 +12,15 @@ h2 {
 a {
 	text-decoration: none;
 }
-
+form {
+	display:inline;
+}
 li span {
 	color: black;
 }
-
+input, select {
+    border-radius: 4px; /* CSS3 */
+}
 .f {
 	color: hotpink;
 }

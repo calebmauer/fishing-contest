@@ -1,153 +1,60 @@
+<html ng-app="app">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 {% load staticfiles %}
-<script src="{% static "jquery-1.12.4.min.js" %}"></script>
+
+<script src="{% static "jquery-3.0.0.min.js" %}"></script>
 <script src="{% static "jquery.contextMenu.js" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static "jqeury.contextMenu.css" %}" media="screen" />
 
+<script src="{% static "angular.min.js" %}"></script>
+
+<script src="{% static "main.js" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static "main.css" %}" media="screen" />
 
-<script type="text/JavaScript">
-
-function contestantClick(contestantid) {
-	// If fish already loaded, remove it. Toggle functionality.
-	divid = "#c_"+contestantid+"_fish";
-	if ($(divid).length) {
-		$(divid).remove();
-	} else {
-		requestHref = "fishlist/"+contestantid;
-		$.ajax(requestHref, {
-		  success: function(data) {
-			$('#c_'+contestantid).append(data);
-			$(divid).find(".new-weight").focus();
-		  },
-		  error: function() {
-			 alert('An error occurred trying to load'+requestHref);
-		  }
-	    });
-    }
-}
-
-function addContestant() {
-	divid = $("#new-contestant");
-	
-	firstBox = $("#new-first-name");
-	lastBox = $("#new-last-name");
-	ageBox = $("#new-age");
-	genderBox = $("#new-gender");
-	
-	firstName = firstBox.val();
-	lastName = lastBox.val();
-	age = ageBox.val();
-	gender = genderBox.val();
-	
-	$.get("addcontestant/",
-		{firstName: firstBox.val(), lastName: lastBox.val(), age: ageBox.val(), gender: genderBox.val()},
-		function(data) {
-			$(divid).before(data);
-			firstBox.val('');
-			lastBox.val('');
-			ageBox.val('');
-			genderBox.val('M');
-			firstBox.focus();
-			$("#c-count").html(parseInt($("#c-count").html())+1);
-		}
-	);
-}
-
-function addFish(contestantid) {
-	divid = "#c_"+contestantid+"_fish";
-	weightBox = $(divid).find(".new-weight");
-	weight = weightBox.val();
-	
-	// Add a new fish to this contestant and insert the new fish into contestant's list
-	$.get("addfish/",
-		{weight: weightBox.val(), contestantid: contestantid},
-		function(data) {
-			newListItem = $(divid).find(".new-fish-li");
-			newListItem.before(data);
-			weightBox.val('');
-			weightBox.focus();
-		}
-	);
-}
-
-function addContestantContextmenu(contestantid,name) {
-	contestantspan = $("#c_"+contestantid+"_span");
-
-	// Show menu when clicked
-	contestantspan.contextMenu({
-		menu: 'deleteMenu'
-	},
-		function(action, el, pos) {
-			if (action == "refresh") {
-				location.reload();
-			} else if (action == "delete") {
-				$.get("deletecontestant/", {contestantid: contestantid},
-				  function(data) {
-					$("#c_"+contestantid).remove();
-					$("#c-count").html(parseInt($("#c-count").html())-1);
-				  }
-				);
-			}
-		}
-	);
-}
-
-function addFishContextmenu(fishid) {
-
-	fishli = $("#f_"+fishid);
-
-	fishli.contextMenu({
-		menu: 'deleteFishMenu'
-	},
-		function(action, el, pos) {
-			if (action == "refreshfish") {
-				location.reload();
-			} else if (action == "deletefish") {
-				$.get("deletefish/", {fishid: fishid},
-					function(data) {
-						fishli.remove();
-					}
-				);
-			}
-	});
-}
-
-$( document ).ready(function() {
-    $("#new-first-name").focus();
-});
-
-</script>
-
-
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fishing Contest</title>
 </head>
+
 <body oncontextmenu="return false;">
 	<a href="{% url 'leaderboard' %}">Leaderboard</a><br/>
 	<a href="{% url 'leaderboard_long' %}">Long Leaderboard</a>
-	<a href="{% url 'main' %}"><h1>Kid's Fishing Contest 2016</h1></a>
-
-	<div width="50%">
-		<h2>Contestants (<span id="c-count">{{contestants|length}}</span>)</h2>
+	<a href="{% url 'main' %}"><h1>Kid's Fishing Contest <span id="year"></span></h1></a>
+{% verbatim %} <!-- Django ignores curly braces after verbatim -->
+	<div width="50%" ng-controller="Contestants as contestants">
+		<div ng-if="contestants.loaded">
+		<h2>Contestants (<span id="c-count">{{contestants.count()}}</span>)</h2>
 		<ul>
-		{% if contestants %}
-			{% for contestant in contestants %}
-				{% include "fishingcontest/contestantentry.html" with contestant=contestant only %}
-			{% endfor %}
-		{% endif %}
-			<li id="new-contestant">
-				<input id="new-first-name" placeholder="First name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<input id="new-last-name" placeholder="Last name" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<input id="new-age" placeholder="Age" type="number" onkeypress="Javascript: if (event.keyCode==13) addContestant();"></input>
-				<select id="new-gender" onkeypress="Javascript: if (event.keyCode==13)  addContestant();">
-					<option value="M">Boy</option>
-					<option value="F">Girl</option>
-				</select>
-				<button onClick="addContestant()">Add new</button>
+			<li ng-repeat="(id, contestant) in contestants.items" class="contestant {{contestant.gender}}" >
+				<span contestant-context ng-click="contestants.contestantClick(contestant.id)">
+					{{contestant.last_name}}, {{contestant.first_name}} ({{contestant.age}})
+				</span>
+				<ul ng-if="contestant.show_fish">
+					<li ng-repeat="(id, fish) in contestant.fish" fish-context>
+						<span class="fish">{{fish.weight}}&nbsp;<span style="font-size:x-small">at {{fish.weigh_time}}</span></span>
+					</li>
+					<li>
+						<form>
+							<input type="number" placeholder="Fish weight" ng-model="contestant.new_fish.weight" focus-weight-box></input>
+							<button type="submit" ng-click="contestants.addFish(contestant.id)">Add fish</button>
+						</form>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<form>
+					<input id="first-name" ng-model="contestants.new_contestant.firstName" placeholder="First name"></input>
+					<input ng-model="contestants.new_contestant.lastName" placeholder="Last name"></input>
+					<input ng-model="contestants.new_contestant.age" placeholder="Age" type="number"></input>
+					<select ng-model="contestants.new_contestant.gender">
+						<option value="M">Boy</option>
+						<option value="F">Girl</option>
+					</select>
+					<button type="submit" ng-click="contestants.addContestant()">Add new</button><form>
 			</li>
 		</ul>
+	</div>
 	</div>
 	
 	<!-- Taken from view-source:http://labs.abeautifulsite.net/archived/jquery-contextMenu/demo/ -->
@@ -160,3 +67,5 @@ $( document ).ready(function() {
 		<li class="quit separator"><a href="#refreshfish">Refresh</a></li>
 	</ul>
 </body>
+{% endverbatim %}
+</html>
